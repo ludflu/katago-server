@@ -12,7 +12,8 @@
 from katago_gtp_bot import KataGTPBot
 from get_bot_app import get_bot_app
 
-katago_cmd = '/app/katago gtp -model /api/g170e-b20c256x2-s5303129600-d1228401921.bin.gz -config /api/gtp_ahn.cfg '
+model = 'kata1-b28c512nbt-s7347516160-d4365272959.bin.gz'
+katago_cmd = f'/app/katago gtp -model /api/{model} -config /api/gtp_ahn.cfg '
 katago_gtp_bot = KataGTPBot( katago_cmd.split() )
 
 # Get an app with 'select-move/<botname>' endpoints
@@ -20,4 +21,4 @@ app = get_bot_app( name='katago_gtp_bot', bot=katago_gtp_bot )
 
 #----------------------------
 if __name__ == '__main__':
-    app.run( host='0.0.0.0', port=2718, debug=True)
+    app.run( host='0.0.0.0', port=2178, debug=True)

@@ -45,3 +45,6 @@ RUN cp /KataGo/cpp/build/katago /app
 WORKDIR /api
 COPY . /api
 RUN poetry --no-root install
+
+EXPOSE 2178
+CMD ["poetry","run","python","katago_server.py"]

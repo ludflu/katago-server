@@ -12,4 +12,5 @@ shell:
 #	docker buildx inspect --bootstrap
 
 
-
+up:
+	docker run -p 2178:2178 katagomachine4:latest
