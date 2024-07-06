@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "katago-api"
+version = "0.1.0"
+description = ""
+authors = ["Jim Snavely"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+click = "^8.1.7"
+flask = "^3.0.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
