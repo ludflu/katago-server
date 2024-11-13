@@ -17,9 +17,19 @@ from flask import jsonify
 from flask import request
 from flask_caching import Cache
 
+def make_key():
+   """A function which is called to derive the key for a computed value.
+      The key in this case is the concat value of all the json request
+      parameters. Other strategy could to use any hashing function.
+   :returns: unique string for which the value should be cached.
+   """
+   user_data = request.get_json()
+   return ",".join([f"{key}={value}" for key, value in user_data.items()])
+
+
 # Return a flask app that will ask the specified bot for a move.
 #-----------------------------------------------------------------
-def get_bot_app( name,bot):
+def get_bot_app(name,bot):
 
     here = os.path.dirname( __file__)
     static_path = os.path.join( here, 'static')
@@ -35,7 +45,7 @@ def get_bot_app( name,bot):
     # Ask the named bot for the next move
     #--------------------------------------
     @app.route('/select-move/' + name, methods=['POST'])
-    @cache.cached()
+    @cache.cached(make_cache_key=make_key)
     def select_move():
         dtstr = datetime.strftime(datetime.now(),'%Y-%m-%d %H:%M:%S')
         content = request.json
@@ -53,7 +63,7 @@ def get_bot_app( name,bot):
     # Ask the named bot for the pointwise ownership info
     #------------------------------------------------------
     @app.route('/score/' + name, methods=['POST'])
-    @cache.cached()
+    @cache.cached(make_cache_key=make_key)
     def score():
         dtstr = datetime.strftime(datetime.now(),'%Y-%m-%d %H:%M:%S')
         content = request.json
