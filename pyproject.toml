@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.10"
 click = "^8.1.7"
 flask = "^3.0.3"
+flask-caching = "^2.3.0"
 
 
 [build-system]

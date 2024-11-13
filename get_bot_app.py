@@ -15,6 +15,7 @@ from datetime import datetime
 from flask import Flask
 from flask import jsonify
 from flask import request
+from flask_caching import Cache
 
 # Return a flask app that will ask the specified bot for a move.
 #-----------------------------------------------------------------
@@ -22,11 +23,19 @@ def get_bot_app( name,bot):
 
     here = os.path.dirname( __file__)
     static_path = os.path.join( here, 'static')
-    app = Flask( __name__, static_folder=static_path, static_url_path='/static')
+    cache = Cache(config = {
+        "DEBUG": True,          # some Flask specific configs
+        "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
+        "CACHE_DEFAULT_TIMEOUT": 60 * 60 * 10 #cache for 10 hours
+    })
 
-    @app.route('/select-move/' + name, methods=['POST'])
+    app = Flask( __name__, static_folder=static_path, static_url_path='/static')
+    cache.init_app(app)
+
     # Ask the named bot for the next move
     #--------------------------------------
+    @app.route('/select-move/' + name, methods=['POST'])
+    @cache.cached()
     def select_move():
         dtstr = datetime.strftime(datetime.now(),'%Y-%m-%d %H:%M:%S')
         content = request.json
@@ -41,9 +50,10 @@ def get_bot_app( name,bot):
             'request_id': config.get('request_id','') # echo request_id
         })
 
-    @app.route('/score/' + name, methods=['POST'])
     # Ask the named bot for the pointwise ownership info
     #------------------------------------------------------
+    @app.route('/score/' + name, methods=['POST'])
+    @cache.cached()
     def score():
         dtstr = datetime.strftime(datetime.now(),'%Y-%m-%d %H:%M:%S')
         content = request.json
