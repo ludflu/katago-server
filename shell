@@ -1,0 +1,3 @@
+#!/run/current-system/sw/bin/bash
+#docker run --rm --gpus all docker.io/library/katago-gpu nvidia-smi
+docker run -it --rm --gpus all katagomachine4 /bin/bash

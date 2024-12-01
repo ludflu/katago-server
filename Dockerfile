@@ -1,6 +1,6 @@
-FROM ubuntu:latest
+FROM docker.io/library/katago-gpu
 
-ARG KATAGO_VERSION=v1.14.1
+ARG KATAGO_VERSION=v1.15.3
 
 RUN apt update -y && apt install -y \
   && rm -rf /var/lib/apt/lists/*
@@ -15,6 +15,8 @@ RUN apt update -y && apt install -y \
   libeigen3-dev \
   python3 \
   python3-poetry \
+  cuda-toolkit \ 
+  cudnn9-cuda-12 \
   && rm -rf /var/lib/apt/lists/*
 
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.29.2/cmake-3.29.2-linux-x86_64.sh \
@@ -30,13 +32,8 @@ RUN git clone -b ${KATAGO_VERSION} https://github.com/lightvector/KataGo.git && 
 
 WORKDIR /KataGo/cpp/build
 
-RUN cmake ..  -DUSE_BACKEND=EIGEN
+RUN cmake ..  -DCUDAToolkit_ROOT=/usr/local/cuda-12.1 -DUSE_BACKEND=CUDA
 RUN make -j$(nproc)
-
-RUN apt update -y && apt install --no-install-recommends -y \
-  zlib1g-dev \
-  libzip-dev \
-  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -44,7 +41,7 @@ RUN cp /KataGo/cpp/build/katago /app
 
 WORKDIR /api
 COPY . /api
-RUN poetry --no-root install
+RUN poetry install
 
 EXPOSE 2178
 CMD ["poetry","run","python","katago_server.py"]
